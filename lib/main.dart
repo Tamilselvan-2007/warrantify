@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,22 +14,25 @@ Future<void> main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  runApp(const WarrantifyApp());
+  runApp(
+  const ProviderScope(
+    child: WarrantifyApp(),
+  ),
+);
 }
 
 final supabase = Supabase.instance.client;
 
-class WarrantifyApp extends StatelessWidget {
+class WarrantifyApp extends ConsumerWidget {
   const WarrantifyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    return MaterialApp.router(
       title: 'Warrantify',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Warrantify')),
-        body: const Center(child: Text('Supabase connected ✅')),
-      ),
+      theme: AppTheme.light,
+      routerConfig: router,
     );
   }
 }
